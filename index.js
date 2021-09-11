@@ -60,7 +60,6 @@
 
     body.on("click", ".square", function () {
         let t = $(this);
-        console.log(t);
         let pieceType = t.attr("data-val");
         let currentPosition = t.attr("position");
         // if(!moveTypeFromPiece(pieceType, currentPosition)) return;
@@ -78,6 +77,7 @@
 
     // so currently event bubbles....
     function allowMoves(movesList, piece, currRow, currCol) {
+        console.log(movesList);
         movesList.forEach(move => {
             move.addEventListener("click", () => {
                 move.innerHTML = piece;
@@ -102,19 +102,47 @@
             let [thisRow, thisCol] = currSquare.getAttribute("position").split("-");
             let sqColor = currSquare.getAttribute("sq-color");
 
-            // lets test for a pawn, light up and allow the forward movement, +1 row
-            if(piece.piece === PIECES.PAWN) {
-                // white pawn can move one up and only in this column
-                if (piece.color === WHITE && +thisRow + 1 === +currRow && currCol === thisCol) {
-                    let classToAdd = sqColor === "white" ? "can-move-to-white" : "can-move-to-black";
-                    currSquare.classList.add(classToAdd);
+            let data = {currSquare, thisRow, thisCol, sqColor, currRow, currCol};
 
-                    // added to later be used to loop through for allowable clicks to transfer piece to
-                    possibleMoves.push(currSquare);
-                }
-            }
+            // move comes back valid ? use it or skip
+            let move = moveOptionsByPiece(piece, data);
+            move ? possibleMoves.push(move) : undefined;
+
         }
         return possibleMoves;
+    }
+
+    // others require square blocking check
+    function moveOptionsByPiece(piece, data) {
+        switch (piece.piece) {
+            case PIECES.PAWN:
+                return pawnMoveWhiteTest(piece, data);
+            case PIECES.ROOK:
+                return;
+            case PIECES.KNIGHT:
+                return knightMoveTest(piece, data);
+            case PIECES.BISHOP:
+                return;
+            case PIECES.QUEEN:
+                return;
+            case PIECES.KING:
+                return;
+        }
+    }
+
+    function knightMoveTest(piece, data) {
+
+    }
+
+    function pawnMoveWhiteTest(piece, data){
+        // white pawn can move one up and only in this column
+        if (piece.color === WHITE && +data.thisRow + 1 === +data.currRow && data.currCol === data.thisCol) {
+            let classToAdd = data.sqColor === "white" ? "can-move-to-white" : "can-move-to-black";
+            data.currSquare.classList.add(classToAdd);
+
+            // added to later be used to loop through for allowable clicks to transfer piece to
+            return data.currSquare;
+        }
     }
 
 })();

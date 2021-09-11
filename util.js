@@ -31,7 +31,7 @@ function removePieceAndMoveHighlightFromPrevSquareAndUpdateDataSetVal(col, row, 
         for(let j = 0; j < 8; j++) {
             let boardIdx = i * 8 + j;
             rowArr.push(boardData[boardIdx]);
-            removeHighlightClass(boardData);
+            removeHighlightClass(boardData[boardIdx]);
         }
         boardCopy.push(rowArr);
     }
@@ -42,6 +42,7 @@ function removePieceAndMoveHighlightFromPrevSquareAndUpdateDataSetVal(col, row, 
 
     // does not work, currently allows the pawn to just storm up the board, adding the highlight class to the next square
     // in line....
+    // a new pawn can be created behind the one you just moved and that one can also move...wtf
     tgtSquare.dataset.val = boardCopy[row][col].dataset.val;
     boardCopy[row][col].dataset.val = "";
 }
