@@ -161,7 +161,7 @@ function parseIt(squareContent) {
 }
 
 
-
+let possibleMovesList = [];
 function generateMoves(board, pieceType, row, col) {
 
     switch (pieceType) {
@@ -184,24 +184,24 @@ function generateMoves(board, pieceType, row, col) {
  @return moveList - {array} - ['1-1', '5-6']
  * */
 function rookMoves(board, currRow, currCol) {
-    let moveList = [];
+    possibleMovesList = [];
     for(let i = currRow - 1; i >= 0; i--) {
-        moveList.push(`${i}-${currCol}`);
+        possibleMovesList.push(`${i}-${currCol}`);
         if(isOccupied(getSquareFromBoard(board, [i, currCol]))) break;
     }
     for(let i = currCol - 1; i >= 0; i--) {
-        moveList.push(`${currRow}-${i}`);
+        possibleMovesList.push(`${currRow}-${i}`);
         if(isOccupied(getSquareFromBoard(board, [currRow, i]))) break;
     }
     for(let i = currRow + 1; i < 8; i++) {
-        moveList.push(`${i}-${currCol}`);
+        possibleMovesList.push(`${i}-${currCol}`);
         if(isOccupied(getSquareFromBoard(board, [i, currCol]))) break;
     }
     for(let i = currCol + 1; i < 8; i++) {
-        moveList.push(`${currRow}-${i}`);
+        possibleMovesList.push(`${currRow}-${i}`);
         if(isOccupied(getSquareFromBoard(board, [currRow, i]))) break;
     }
-    return moveList;
+    return possibleMovesList;
 }
 
 // take that list, loop over the board, highlight the squares
@@ -238,6 +238,43 @@ function getSquareFromBoard(board, currPositionArr) {
     });
     return s;
 }
+
+let startingSquare = '';
+function movePiece(board, move, startPosition) {
+    resetBoardClasses(board);
+    boardChildren(board).forEach(square => {
+        let position = square.dataset.position;
+        if(position === move.join("-")) {
+            addPiece(board, move.join("-"), square)
+            removePiece(board, startPosition);
+            startingSquare = '';
+        }
+    });
+}
+
+function removePiece(board, square) {
+    console.log(square);
+    square.innerHTML = '';
+}
+
+function addPiece(board, position, square) {
+    boardChildren(board).forEach(s => {
+        let p = s.dataset.position;
+        if(position === p) {
+            square.innerHTML = 'H'
+        }
+    });
+}
+
+function canMovePiece(move, moveList) {
+    // can I move here
+    console.log(moveList);
+    console.log(move);
+    return moveList.includes(move.join("-"));
+}
+
+
+
 
 function isOccupied(square) {
     return square.dataset.val !== 'undefined';

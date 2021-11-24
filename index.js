@@ -123,20 +123,42 @@
     function squareEvent() {
         Array.from(document.getElementsByClassName("square")).forEach(s => {
             s.addEventListener("click", (e) => {
-
-                // when a piece is clicked one after another
-                resetBoardClasses(board);
-
-                // will need to make this work when a piece is clicked, move to this square
-                if(e.path.length < 8) return; // blank square, error for now
+                if(startingSquare === '') {
+                    console.log('resetting start square')
+                    startingSquare = s;
+                }
+                let valid = false;
+                let isMovingHere = false;
+                let squareObj = e.path.length < 8
+                    ? e.target
+                    : e.path[1];
 
                 let pathObj = e.path[0];
-                let [row, col] = actualPosition(e.path[1].dataset.position.split("-"));
+                let [row, col] = actualPosition(squareObj.dataset.position.split("-"));
                 let node = pathObj.tagName;
-                if(node !== "IMG") return;
-                let [color, pieceType] = pathObj.outerHTML.split(" ")[3].split("/")[1].split(".")[0].split("-");
-                if(color !== whosTurn) return;
-                showMovesOnBoard(board, [row, col], generateMoves(board, pieceType, row, col));
+                if(node !== "IMG") {
+                    isMovingHere = true;
+                }
+                let [color, pieceType] = [0, 0];
+                if(!isMovingHere) {
+                    [color, pieceType] = pathObj.outerHTML.split(" ")[3].split("/")[1].split(".")[0].split("-");
+                    if (color !== whosTurn) return;
+                }
+
+                if(possibleMovesList.length < 1) {
+                    possibleMovesList = generateMoves(board, pieceType, row, col);
+                }
+
+                // will need to make this work when a piece is clicked, move to this square
+                if(e.path.length < 8) {
+                    valid = canMovePiece([row, col], possibleMovesList);
+                    if(valid) movePiece(board, [row, col], s);
+                }
+
+                // when a piece is clicked one after another
+                if(valid) resetBoardClasses(board);
+
+                showMovesOnBoard(board, [row, col], possibleMovesList);
             });
         });
     }
