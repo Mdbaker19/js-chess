@@ -21,7 +21,7 @@
     document.getElementById("changeMe").addEventListener("click", () => {
         whiteColor = whiteColorInput.value;
         blackColor = blackColorInput.value;
-        getPositionFromFen(board, currentFen, createBoard);
+        getPositionFromFen(board, currentFen, createBoard, squareEvent);
     });
 
     window.addEventListener("keydown", e => {
@@ -80,8 +80,8 @@
         }
     }
 
-    getPositionFromFen(board, currentFen, createBoard);
-    // getPositionFromFen(board, pieceTestFen, createBoard);
+    // getPositionFromFen(board, currentFen, createBoard);
+    getPositionFromFen(board, pieceTestFen, createBoard, squareEvent);
 
     function url(name) {
         return `https://api.chess.com/pub/player/${name}/games`;
@@ -113,6 +113,32 @@
         return fetch(url(name)).then(res => res.json().then(data => {
             return data.games
         }));
+    }
+
+
+
+
+    // MOVE STUFF
+    let whosTurn = 'b';
+    function squareEvent() {
+        Array.from(document.getElementsByClassName("square")).forEach(s => {
+            s.addEventListener("click", (e) => {
+
+                // when a piece is clicked one after another
+                resetBoardClasses(board);
+
+                // will need to make this work when a piece is clicked, move to this square
+                if(e.path.length < 8) return; // blank square, error for now
+
+                let pathObj = e.path[0];
+                let [row, col] = actualPosition(e.path[1].dataset.position.split("-"));
+                let node = pathObj.tagName;
+                if(node !== "IMG") return;
+                let [color, pieceType] = pathObj.outerHTML.split(" ")[3].split("/")[1].split(".")[0].split("-");
+                if(color !== whosTurn) return;
+                showMovesOnBoard(board, [row, col], generateMoves(board, pieceType, row, col));
+            });
+        });
     }
 
 })();

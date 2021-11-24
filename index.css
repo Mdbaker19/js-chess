@@ -3,25 +3,33 @@
     margin: 0;
     padding: 0;
 }
-body{
+body {
     background-color: #8e8787;
 }
-div{
+div {
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
 }
-#board{
+#board {
     display: flex;
     max-width: 801px;
     flex-wrap: wrap;
 }
 
 /*JS classes*/
-.can-move-to-white{
+.can-move-to-white {
     box-shadow: inset 0 0 11px 6px #091a2c;
 }
-.can-move-to-black{
+.can-move-to-black {
     box-shadow: inset 0 0 11px 6px aliceblue;
+}
+.can-capture-piece {
+    box-shadow: inset 0 0 6px 3px #e60313;
+}
+
+.piece-img {
+    border-radius: 10px;
+    max-width: 75%;
 }
