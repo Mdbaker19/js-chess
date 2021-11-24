@@ -1,4 +1,5 @@
-let currentFen = "rbnqknbr/pppppppp/8/8/8/8/PPPPPPPP/RBNQKNBR";
+let currentFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+let baseFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 let pieceTestFen = "8/pb3k2/1PBn4/8/8/Q7/6r1/8"
 const PIECES = {
     PAWN: "pawn",
@@ -17,9 +18,10 @@ let blackColor = blackColorInput.value;
 let whiteColorInput = document.getElementById("white-color");
 let whiteColor = whiteColorInput.value;
 
+
+
 function square(row, col, pieceLetterInput = '') {
     let isBlack = (row + col) % 2 !== 0;
-    console.log(blackColor, whiteColor);
     let color = isBlack ? blackColor : whiteColor;
     let squareAttr = isBlack ? "black" : "white";
     let square = document.createElement("div");
@@ -58,7 +60,7 @@ function getPiece(pieceInput) {
 
 function getPositionFromFen(board, fenString, fallBackFn) {
     board.html("");
-    fenString = fenString.split("/").reverse().join("");
+    fenString = fenString.split("/").join("");
     // from invalid username, call normal create board function
     if(!fenString) {
         fallBackFn(board);
@@ -88,8 +90,6 @@ function getPositionFromFen(board, fenString, fallBackFn) {
 
 }
 
-// i think the cols amount is not right when it leaves this recursive call...
-// everytime a piece is hit the color messes up
 function createBlankSquares(board, rows, cols, amountOfBlankSquares) {
     if(cols > 7) {
         cols = 0;
@@ -104,3 +104,59 @@ function createBlankSquares(board, rows, cols, amountOfBlankSquares) {
 }
 
 // after notes are submitted by the user, save the FEN, possibly to a DB or something by user
+
+
+
+
+
+
+
+
+const PIECE_TABLE = {
+    king: 'k',
+    queen: 'q',
+    bishop: 'b',
+    rook: 'r',
+    pawn: 'p',
+    knight: 'n'
+}
+
+function readFenFromBoard(board) {
+    console.log("GOAL: ", baseFen);
+    // console.log("GOAL: ", pieceTestFen);
+    let fen = "";
+    let count = 0;
+    let colCounter = 0; // if this >= 8 add the '/'
+    const boardArr = board[0].childNodes;
+    for(let i = 0; i < boardArr.length; i++) {
+        colCounter++;
+        if(colCounter === 9) {
+            fen += '/';
+            colCounter = 0;
+        }
+        let currSquare = boardArr[i];
+        let potentialPiece = currSquare.dataset.val;
+        if(potentialPiece !== 'undefined') {
+            if(count !== 0) {
+                fen += count;
+                count = 0;
+            }
+            let [pieceColor, pieceType] = parseIt(potentialPiece); // [b, rook]
+            fen +=  pieceColor === 'b'
+                ? PIECE_TABLE[pieceType]
+                : PIECE_TABLE[pieceType].toUpperCase();
+        } else {
+            count++;
+            if(count === 8) {
+                fen += count;
+                count = 0;
+            }
+        }
+    }
+    return fen;
+}
+
+
+function parseIt(squareContent) {
+    return squareContent.split(" ")[2].split("/")[1].split(".")[0].split("-");
+}

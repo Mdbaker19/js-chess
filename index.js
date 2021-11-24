@@ -14,6 +14,10 @@
         submit();
     });
 
+    document.getElementById("fenSaver").addEventListener("click", () => {
+        console.log(readFenFromBoard(board));
+    });
+
     document.getElementById("changeMe").addEventListener("click", () => {
         whiteColor = whiteColorInput.value;
         blackColor = blackColorInput.value;
@@ -76,7 +80,8 @@
         }
     }
 
-    getPositionFromFen(board, pieceTestFen, createBoard);
+    getPositionFromFen(board, currentFen, createBoard);
+    // getPositionFromFen(board, pieceTestFen, createBoard);
 
     function url(name) {
         return `https://api.chess.com/pub/player/${name}/games`;
